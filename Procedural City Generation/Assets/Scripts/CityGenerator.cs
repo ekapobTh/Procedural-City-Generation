@@ -291,7 +291,6 @@ namespace CityGenerator
             {
                 var cityGroupMarks = CityGroupGenerator.Instance.GetCityMarks();
                 var newRoad = Instantiate(minorRoadPrefab, roadParent) as SplineContainer;
-                var newRoadConnection = newRoad.GetComponent<RoadConnection>();
                 var mesh = new Mesh();
                 var roadMeshFilter = newRoad.GetComponent<MeshFilter>();
                 var spline = new Spline();
@@ -311,10 +310,6 @@ namespace CityGenerator
                     var newKnot = new BezierKnot();
                     var startMark = marks[currentStep.Item1, currentStep.Item2];
                     var nextMark = marks[nextStep.Item1, nextStep.Item2];
-
-                    startMark.RegisteredRoadConnection.Connect(nextMark);
-                    newRoadConnection.Connect(startMark);
-                    nextMark.RegisterRoad(newRoadConnection);
 
                     newKnot.Position = startMark.transform.position.ApplyOffset(CityUtility.ROAD_OFFSET, currentStepDirection, true);
                     spline.Add(newKnot);
@@ -336,9 +331,6 @@ namespace CityGenerator
                         var (backStep, _) = MoveStep(currentStep, currentStepDirection.TurnAround());
                         var endMark = marks[currentStep.Item1, currentStep.Item2];
                         var previousMark = marks[backStep.Item1, backStep.Item2];
-
-                        endMark.RegisteredRoadConnection.Connect(previousMark);
-                        newRoadConnection.Connect(endMark);
                         break;
                     }
                     else if (marks.IsStepOn(currentStep, CityObjectType.Junction))
@@ -351,27 +343,6 @@ namespace CityGenerator
                         var (advanceStep, _) = MoveStep(currentStep, currentStepDirection);
                         var (backStep, _) = MoveStep(currentStep, currentStepDirection.TurnAround());
                         var previousMark = marks[backStep.Item1, backStep.Item2];
-
-                        if (!currentMark.IsDrawn)
-                        {
-                            if (marks[advanceStep.Item1, advanceStep.Item2].markType == CityObjectType.None && previousMark.RegisteredRoadConnection != null)
-                                previousMark.RegisteredRoadConnection.Connect(currentMark);
-                            else
-                            {
-                                var (leftStep, _) = MoveStep(currentStep, currentStepDirection.TurnLeft());
-                                var (rightStep, _) = MoveStep(currentStep, currentStepDirection.TurnRight());
-
-                                if (marks.IsStepOnRoad(leftStep))
-                                    newRoadConnection.Connect(marks[leftStep.Item1, leftStep.Item2]);
-                                if (marks.IsStepOnRoad(rightStep))
-                                    newRoadConnection.Connect(marks[rightStep.Item1, rightStep.Item2]);
-                            }
-                        }
-                        else
-                        {
-                            currentMark.RegisteredRoadConnection.Connect(previousMark);
-                            newRoadConnection.Connect(currentMark);
-                        }
                     }
                     else if (marks.IsStepOn(currentStep, CityObjectType.MinorRoad))
                     {
@@ -383,7 +354,6 @@ namespace CityGenerator
                             newKnot.Position = currentMark.transform.position;
 
                         spline.Add(newKnot);
-                        currentMark.RegisterRoad(newRoadConnection);
                     }
                     else
                         break;

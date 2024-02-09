@@ -296,7 +296,6 @@ namespace CityGenerator
 
             {   // Round road
                 var newRoad = Instantiate(majorRoadPrefab, roadParent) as SplineContainer;
-                var newRoadConnection = newRoad.GetComponent<RoadConnection>();
                 var mesh = new Mesh();
                 var roadMeshFilter = newRoad.GetComponent<MeshFilter>();
                 var spline = new Spline();
@@ -313,7 +312,6 @@ namespace CityGenerator
 
                     newKnot.Position = ComputeRoundRoadPosition(x, y);
                     spline.Add(newKnot);
-                    cityMarks[x, y].RegisterRoad(newRoadConnection);
                 }
 
                 for (; y < edgeRow - 1; y++)
@@ -322,7 +320,6 @@ namespace CityGenerator
 
                     newKnot.Position = ComputeRoundRoadPosition(x, y);
                     spline.Add(newKnot);
-                    cityMarks[x, y].RegisterRoad(newRoadConnection);
                 }
 
                 for (; x > 0; x--)
@@ -331,7 +328,6 @@ namespace CityGenerator
 
                     newKnot.Position = ComputeRoundRoadPosition(x, y);
                     spline.Add(newKnot);
-                    cityMarks[x, y].RegisterRoad(newRoadConnection);
                 }
 
                 for (; y > 0; y--)
@@ -340,7 +336,6 @@ namespace CityGenerator
 
                     newKnot.Position = ComputeRoundRoadPosition(x, y);
                     spline.Add(newKnot);
-                    cityMarks[x, y].RegisterRoad(newRoadConnection);
                 }
 
                 spline.SetTangentMode(TangentMode.AutoSmooth);
@@ -358,7 +353,6 @@ namespace CityGenerator
                 for (int i = 1; i < horizontalMajorRoadCount; i++)
                 {
                     var newRoad = Instantiate(majorRoadPrefab, roadParent) as SplineContainer;
-                    var newRoadConnection = newRoad.GetComponent<RoadConnection>();
                     var mesh = new Mesh();
                     var roadMeshFilter = newRoad.GetComponent<MeshFilter>();
                     var spline = new Spline();
@@ -373,19 +367,9 @@ namespace CityGenerator
                         var pos = ComputeRoundRoadPosition(x, j);
 
                         if (j == 0)
-                        {
-                            cityMarks[x, j].RegisteredRoadConnection.Connect(cityMarks[x, j + 1]);
-                            newRoadConnection.Connect(cityMarks[x, j]);
                             pos = pos.ApplyOffset(CityUtility.ROAD_OFFSET, StepMoveDirectionType.Left, false);
-                        }
                         else if (j == edgeRow - 1)
-                        {
-                            cityMarks[x, j].RegisteredRoadConnection.Connect(cityMarks[x, j - 1]);
-                            newRoadConnection.Connect(cityMarks[x, j]);
                             pos = pos.ApplyOffset(CityUtility.ROAD_OFFSET, StepMoveDirectionType.Left, true);
-                        }
-                        else
-                            cityMarks[x, j].RegisterRoad(newRoadConnection);
 
                         var newKnot = new BezierKnot();
 
@@ -401,7 +385,6 @@ namespace CityGenerator
                 for (int i = 1; i < verticalMajorRoadCount; i++)
                 {
                     var newRoad = Instantiate(majorRoadPrefab, roadParent) as SplineContainer;
-                    var newRoadConnection = newRoad.GetComponent<RoadConnection>();
                     var mesh = new Mesh();
                     var roadMeshFilter = newRoad.GetComponent<MeshFilter>();
                     var spline = new Spline();
@@ -416,31 +399,9 @@ namespace CityGenerator
                         var pos = ComputeRoundRoadPosition(j, y);
 
                         if (j == 0)
-                        {
-                            cityMarks[j, y].RegisteredRoadConnection.Connect(cityMarks[j + 1, y]);
-                            newRoadConnection.Connect(cityMarks[j, y]);
                             pos = pos.ApplyOffset(CityUtility.ROAD_OFFSET, StepMoveDirectionType.Back, false);
-                        }
                         else if (j == edgeRow - 1)
-                        {
-                            cityMarks[j, y].RegisteredRoadConnection.Connect(cityMarks[j - 1, y]);
-                            newRoadConnection.Connect(cityMarks[j, y]);
                             pos = pos.ApplyOffset(CityUtility.ROAD_OFFSET, StepMoveDirectionType.Back, true);
-                        }
-                        else
-                        {
-                            if (cityMarks[j, y].IsDrawn)
-                            {
-                                newRoadConnection.Connect(cityMarks[j, y + 1]);
-                                newRoadConnection.Connect(cityMarks[j, y - 1]);
-
-                                cityMarks[j, y].RegisteredRoadConnection.Connect(cityMarks[j - 1, y]);
-                                if (j < edgeColumn - 1)
-                                    cityMarks[j, y].RegisteredRoadConnection.Connect(cityMarks[j + 1, y]);
-                            }
-                            else
-                                cityMarks[j, y].RegisterRoad(newRoadConnection);
-                        }
 
                         var newKnot = new BezierKnot();
 

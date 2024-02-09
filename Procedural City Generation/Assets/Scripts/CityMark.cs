@@ -8,11 +8,9 @@ namespace CityGenerator
         public int index;
         public CityObjectType markType;
         [SerializeField] private bool isDrawn = false;
-        [SerializeField] private RoadConnection _roadConnection; // when create road
         [SerializeField] private CityBuildingGenerator building; // when create building
 
         public bool IsDrawn => isDrawn;
-        public RoadConnection RegisteredRoadConnection => _roadConnection;
         public CityBuildingGenerator Building => building;
 
         public (int, int) Index { get; private set; }
@@ -24,15 +22,6 @@ namespace CityGenerator
         {
             markType = CityObjectType.None;
             isDrawn = false;
-            _roadConnection = null;
-        }
-
-        public void RegisterRoad(RoadConnection roadConnection)
-        {
-            if (isDrawn)
-                return;
-            isDrawn = true;
-            _roadConnection = roadConnection;
         }
 
         public void RegisterBuilding(CityBuildingGenerator obj)
