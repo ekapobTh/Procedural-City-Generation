@@ -19,3 +19,13 @@ This project is available on Unity Engine version 2022.3.10f1
 or you can follow the demonstration from the GIF below
 
 <img src="/Content/PCG customization.gif?raw=true">
+
+## Screenshot
+
+![side view screenshot](https://drive.google.com/uc?export=view&id=15_tYJ3Ku0XWkMafsX5FbtsaBZAq6tj-v)
+
+![top view screenshot](https://drive.google.com/uc?export=view&id=1ANNKc28tzr-X_tXwAdlAPGpTd0x9Fclm)
+
+## Credit
+
+[Modular Building Asset](https://www.kenney.nl/assets/modular-buildings)
