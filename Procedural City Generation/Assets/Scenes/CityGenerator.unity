@@ -615,6 +615,10 @@ PrefabInstance:
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 910399375978182894, guid: 7d47019a41db14086907e5eb6d39ea8e, type: 3}
+      propertyPath: isRealtimeRefresh
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 910399375978182894, guid: 7d47019a41db14086907e5eb6d39ea8e, type: 3}
       propertyPath: maximumLotRoadCount
       value: 10
       objectReference: {fileID: 0}
