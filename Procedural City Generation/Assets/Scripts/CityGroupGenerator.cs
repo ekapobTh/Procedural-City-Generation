@@ -14,11 +14,11 @@ namespace CityGenerator
         [SerializeField] private float finalScale = 1f;
 
         [Space(10)]
-        [Range(3, 10)][SerializeField] private int subCityColumn; // x
-        [Range(3, 10)][SerializeField] private int subCityRow; // y
+        [Range(3, 10)][SerializeField] private int lotColumn; // x
+        [Range(3, 10)][SerializeField] private int lotRow; // y
 
         [Space(10)]
-        [Range(0, 10)][SerializeField] private int maximumSubCityRoadCount;
+        [Range(0, 10)][SerializeField] private int maximumLotRoadCount;
 
         [Space(20), Header("Others Attribute")]
         [SerializeField] private GameObject cityBase;
@@ -83,9 +83,9 @@ namespace CityGenerator
                column != columnCache ||
                row != rowCache ||
                finalScale != finalScaleCache ||
-               subCityColumn != subCityColumnCache ||
-               subCityRow != subCityRowCache ||
-               maximumSubCityRoadCount != maximumSubCityRoadCountCache)
+               lotColumn != subCityColumnCache ||
+               lotRow != subCityRowCache ||
+               maximumLotRoadCount != maximumSubCityRoadCountCache)
                 InstantGenerating();
         }
 
@@ -119,9 +119,9 @@ namespace CityGenerator
             columnCache = column;
             rowCache = row;
             finalScaleCache = finalScale;
-            subCityColumnCache = subCityColumn;
-            subCityRowCache = subCityRow;
-            maximumSubCityRoadCountCache = maximumSubCityRoadCount;
+            subCityColumnCache = lotColumn;
+            subCityRowCache = lotRow;
+            maximumSubCityRoadCountCache = maximumLotRoadCount;
 
             isInitial = true;
         }
@@ -138,13 +138,13 @@ namespace CityGenerator
 
                     subCity.name = $"{i} {j}";
 
-                    var offsetX = i * (subCityColumn - 1) * CityUtility.MARKS_SPACE;
-                    var offsetY = j * (subCityRow - 1) * CityUtility.MARKS_SPACE;
+                    var offsetX = i * (lotColumn - 1) * CityUtility.MARKS_SPACE;
+                    var offsetY = j * (lotRow - 1) * CityUtility.MARKS_SPACE;
 
                     subCity.SetCityOffsetPosition(new Vector2(offsetX, offsetY));
                     subCity.SetCityOffsetIndex(new Vector2(i, j));
-                    subCity.SetSize(subCityColumn, subCityRow);
-                    subCity.SetMaximumRoad(maximumSubCityRoadCount);
+                    subCity.SetSize(lotColumn, lotRow);
+                    subCity.SetMaximumRoad(maximumLotRoadCount);
                     subCity.InstantGenerating();
 
                     cities.Add(subCity);
@@ -175,7 +175,7 @@ namespace CityGenerator
                 Destroy(obj.gameObject);
             majorVerticalRoads.Clear();
 
-            cityMarks = new CityMark[(column * subCityColumn) - (column - 1), (row * subCityRow) - (row - 1)];
+            cityMarks = new CityMark[(column * lotColumn) - (column - 1), (row * lotRow) - (row - 1)];
         }
 
         #region Edge Building
@@ -187,8 +187,8 @@ namespace CityGenerator
 
         private void GenerateEdgeBuilding()
         {
-            var edgeColumn = (column * subCityColumn) - (column - 1);
-            var edgeRow = (row * subCityRow) - (row - 1);
+            var edgeColumn = (column * lotColumn) - (column - 1);
+            var edgeRow = (row * lotRow) - (row - 1);
 
             var currentFacingSide = StepMoveDirectionType.Left;
             var x = -1;
@@ -239,8 +239,8 @@ namespace CityGenerator
 
         private void GenerateMainRoad()
         {
-            var edgeColumn = (column * subCityColumn) - (column - 1);
-            var edgeRow = (row * subCityRow) - (row - 1);
+            var edgeColumn = (column * lotColumn) - (column - 1);
+            var edgeRow = (row * lotRow) - (row - 1);
 
             {   // Round road
                 int x = 0;
@@ -259,14 +259,14 @@ namespace CityGenerator
 
                 for (int i = 1; i < horizontalMajorRoadCount; i++)
                 {
-                    var x = (i * subCityColumn) - i;
+                    var x = (i * lotColumn) - i;
 
                     for (int j = 0; j < edgeRow; j++) PlantMainRoadMark(x, j);
                 }
 
                 for (int i = 1; i < verticalMajorRoadCount; i++)
                 {
-                    var y = (i * subCityRow) - i;
+                    var y = (i * lotRow) - i;
 
                     for (int j = 0; j < edgeColumn; j++) PlantMainRoadMark(j, y);
                 }
@@ -291,8 +291,8 @@ namespace CityGenerator
 
         private void ViasualizeMainRoad()
         {
-            var edgeColumn = (column * subCityColumn) - (column - 1);
-            var edgeRow = (row * subCityRow) - (row - 1);
+            var edgeColumn = (column * lotColumn) - (column - 1);
+            var edgeRow = (row * lotRow) - (row - 1);
 
             {   // Round road
                 var newRoad = Instantiate(majorRoadPrefab, roadParent) as SplineContainer;
@@ -366,7 +366,7 @@ namespace CityGenerator
                     roadMeshFilter.mesh = mesh;
                     newRoad.transform.position = Vector3.zero;
 
-                    var x = (i * subCityColumn) - i;
+                    var x = (i * lotColumn) - i;
 
                     for (int j = 0; j < edgeRow; j++)
                     {
@@ -409,7 +409,7 @@ namespace CityGenerator
                     roadMeshFilter.mesh = mesh;
                     newRoad.transform.position = Vector3.zero;
 
-                    var y = (i * subCityRow) - i;
+                    var y = (i * lotRow) - i;
 
                     for (int j = 0; j < edgeColumn; j++)
                     {
@@ -461,8 +461,8 @@ namespace CityGenerator
         [ContextMenu("City Base")]
         private void AdjustCityBase()
         {
-            var xScale = (column * subCityColumn * CityUtility.MARKS_SPACE) + (2 * CityUtility.MARKS_SPACE) - ((column - 1) * CityUtility.MARKS_SPACE);
-            var yScale = (row * subCityRow * CityUtility.MARKS_SPACE) + (2 * CityUtility.MARKS_SPACE) - ((row - 1) * CityUtility.MARKS_SPACE);
+            var xScale = (column * lotColumn * CityUtility.MARKS_SPACE) + (2 * CityUtility.MARKS_SPACE) - ((column - 1) * CityUtility.MARKS_SPACE);
+            var yScale = (row * lotRow * CityUtility.MARKS_SPACE) + (2 * CityUtility.MARKS_SPACE) - ((row - 1) * CityUtility.MARKS_SPACE);
 
             var xLocation = xScale / 2 - 7.5f;
             var yLocation = yScale / 2 - 7.5f;
@@ -495,8 +495,8 @@ namespace CityGenerator
 
         private void ComputeCameraPosition() // 1920x1080
         {
-            var x = (column * (subCityColumn - 1) * CityUtility.MARKS_SPACE) / 2f;
-            var z = (row * (subCityRow - 1) * CityUtility.MARKS_SPACE) / 2f;
+            var x = (column * (lotColumn - 1) * CityUtility.MARKS_SPACE) / 2f;
+            var z = (row * (lotRow - 1) * CityUtility.MARKS_SPACE) / 2f;
 
             cameraPosition.position = new Vector3(x, cameraPosition.position.y, z);
 
