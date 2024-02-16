@@ -1,7 +1,5 @@
 # Procedural City Generation
 
-This repository is my research work in the area of Procedural Content Generation (PCG), utilized for generating cities in the Unity Engine.
-
 ## Version
 
 This project is available on Unity Engine version 2022.3.10f1
