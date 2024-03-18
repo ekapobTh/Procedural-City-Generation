@@ -71,6 +71,23 @@ namespace CityGenerator
 
         private int maximumSubCityRoadCountCache;
 
+        // Pooling
+        private PoolingObjects<CityMark> markPool;
+        private PoolingObjects<SplineContainer> roadPool;
+        private PoolingObjects<CityBuildingGenerator> buildingPool;
+        private PoolingObjects<CityGenerator> cityGeneratorPool;
+
+        protected override void Awake()
+        {
+            base.Awake();
+
+            if (markPool == null) markPool = new PoolingObjects<CityMark>(markPrefab, markParent);
+            if (roadPool == null) roadPool = new PoolingObjects<SplineContainer>(majorRoadPrefab, roadParent);
+            if (buildingPool == null) buildingPool = new PoolingObjects<CityBuildingGenerator>(edgePrefab, edgeParent);
+            if (cityGeneratorPool == null) cityGeneratorPool = new PoolingObjects<CityGenerator>(subCityPrefab, subCityParent);
+
+        }
+
         private void Update()
         {
             if (isInitial && isRealtimeRefresh)
@@ -134,7 +151,7 @@ namespace CityGenerator
             {
                 for (int j = 0; j < row; j++)
                 {
-                    var subCity = Instantiate(subCityPrefab, subCityParent) as CityGenerator;
+                    var subCity = cityGeneratorPool.GetFromPool();
 
                     subCity.name = $"{i} {j}";
 
@@ -157,22 +174,22 @@ namespace CityGenerator
         {
             //print($"CityGroupGenerator Clear");
             foreach (var obj in cities)
-                Destroy(obj.gameObject);
+                cityGeneratorPool.ReturnToPool(obj);
             cities.Clear();
             foreach (var obj in edgeBuildingMarks)
-                Destroy(obj.gameObject);
+                markPool.ReturnToPool(obj);
             edgeBuildingMarks.Clear();
             foreach (var obj in buildings)
-                Destroy(obj.gameObject);
+                buildingPool.ReturnToPool(obj);
             buildings.Clear();
             foreach (var obj in majorRoads)
-                Destroy(obj.gameObject);
+                roadPool.ReturnToPool(obj);
             majorRoads.Clear();
             foreach (var obj in majorHorizontalRoads)
-                Destroy(obj.gameObject);
+                roadPool.ReturnToPool(obj);
             majorHorizontalRoads.Clear();
             foreach (var obj in majorVerticalRoads)
-                Destroy(obj.gameObject);
+                roadPool.ReturnToPool(obj);
             majorVerticalRoads.Clear();
 
             cityMarks = new CityMark[(column * lotColumn) - (column - 1), (row * lotRow) - (row - 1)];
@@ -209,7 +226,7 @@ namespace CityGenerator
             void ConstructEdgeBuilding(int x, int y, StepMoveDirectionType facingSide)
             {
                 // Mark
-                var newBuildingMark = Instantiate(markPrefab, markParent) as CityMark;
+                var newBuildingMark = markPool.GetFromPool();
 
                 newBuildingMark.transform.position = new Vector3(x * CityUtility.MARKS_SPACE, 0f, y * CityUtility.MARKS_SPACE);
                 newBuildingMark.name = $"edge {x} {y}";
@@ -217,7 +234,7 @@ namespace CityGenerator
                 edgeBuildingMarks.Add(newBuildingMark);
 
                 {   // Building
-                    var newBuilding = Instantiate(edgePrefab, edgeParent) as CityBuildingGenerator;
+                    var newBuilding = buildingPool.GetFromPool();
 
                     newBuilding.SetFacingDirection(facingSide);
                     newBuilding.Construct(5);
@@ -278,7 +295,7 @@ namespace CityGenerator
                     return;
 
                 // Mark
-                var newMainRoadMark = Instantiate(markPrefab, markParent) as CityMark;
+                var newMainRoadMark = markPool.GetFromPool();
 
                 newMainRoadMark.transform.position = new Vector3(x * CityUtility.MARKS_SPACE, 0f, y * CityUtility.MARKS_SPACE);
                 newMainRoadMark.name = $"mainroad {x} {y}";
@@ -295,7 +312,7 @@ namespace CityGenerator
             var edgeRow = (row * lotRow) - (row - 1);
 
             {   // Round road
-                var newRoad = Instantiate(majorRoadPrefab, roadParent) as SplineContainer;
+                var newRoad = roadPool.GetFromPool();
                 var mesh = new Mesh();
                 var roadMeshFilter = newRoad.GetComponent<MeshFilter>();
                 var spline = new Spline();
@@ -352,7 +369,7 @@ namespace CityGenerator
 
                 for (int i = 1; i < horizontalMajorRoadCount; i++)
                 {
-                    var newRoad = Instantiate(majorRoadPrefab, roadParent) as SplineContainer;
+                    var newRoad = roadPool.GetFromPool();
                     var mesh = new Mesh();
                     var roadMeshFilter = newRoad.GetComponent<MeshFilter>();
                     var spline = new Spline();
@@ -384,7 +401,7 @@ namespace CityGenerator
 
                 for (int i = 1; i < verticalMajorRoadCount; i++)
                 {
-                    var newRoad = Instantiate(majorRoadPrefab, roadParent) as SplineContainer;
+                    var newRoad = roadPool.GetFromPool();
                     var mesh = new Mesh();
                     var roadMeshFilter = newRoad.GetComponent<MeshFilter>();
                     var spline = new Spline();
@@ -442,7 +459,7 @@ namespace CityGenerator
                     if (cityMarks[x, y] != null)
                         continue;
 
-                    var newMainRoadMark = Instantiate(markPrefab, markParent) as CityMark;
+                    var newMainRoadMark = markPool.GetFromPool();
 
                     newMainRoadMark.transform.position = new Vector3(x * CityUtility.MARKS_SPACE, 0f, y * CityUtility.MARKS_SPACE);
                     newMainRoadMark.name = $"{x} {y}";
