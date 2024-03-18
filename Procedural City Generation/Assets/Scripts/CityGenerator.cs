@@ -604,7 +604,10 @@ namespace CityGenerator
             if (minorRoads.Count > 0)
             {
                 foreach (var minorRoad in minorRoads)
+                {
+                    minorRoad.RemoveSpline(minorRoad.Spline);
                     roadPool.ReturnToPool(minorRoad);
+                }
                 minorRoads.Clear();
             }
 

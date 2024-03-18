@@ -193,6 +193,7 @@ namespace CityGenerator
             majorVerticalRoads.Clear();
 
             cityMarks = new CityMark[(column * lotColumn) - (column - 1), (row * lotRow) - (row - 1)];
+            minorRoadIndex = 0;
         }
 
         #region Edge Building
