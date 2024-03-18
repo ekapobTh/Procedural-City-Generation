@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Splines;
@@ -655,19 +656,26 @@ namespace CityGenerator
         [ContextMenu("Instant Create")]
         public void InstantGenerating()
         {
-            ClearCheckCache(true);
+            StartCoroutine(Generate());
             //GenerateCityBaseMark();
-            MapMarksFromCityGroup();
-            GenerateMinorRoad();
-            VisualizeMinorRoad();
-            GenerateBuilding();
-            GenerateCityBase();
 
-            seedCache = seed;
-            columnCache = subCityColumn;
-            rowCache = subCityRow;
-            maximumMinorRoadCountCache = maximumMinorRoadCount;
-            isInstantGenerating = true;
+            IEnumerator Generate()
+            {
+                ClearCheckCache(true);
+                yield return new WaitForEndOfFrame();
+
+                MapMarksFromCityGroup();
+                GenerateMinorRoad();
+                VisualizeMinorRoad();
+                GenerateBuilding();
+                GenerateCityBase();
+
+                seedCache = seed;
+                columnCache = subCityColumn;
+                rowCache = subCityRow;
+                maximumMinorRoadCountCache = maximumMinorRoadCount;
+                isInstantGenerating = true;
+            }
         }
     }
 }

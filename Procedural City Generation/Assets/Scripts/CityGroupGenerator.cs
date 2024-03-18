@@ -109,10 +109,13 @@ namespace CityGenerator
         [ContextMenu("Instant Create")]
         public void InstantGenerating()
         {
+
             var estimateTime = Time.realtimeSinceStartup;
 
             print($"Start : {Time.realtimeSinceStartup}");
             Clear();
+
+            //yield return new WaitForEndOfFrame();
 
             CityUtility.SetSeed(seed);
 
@@ -120,7 +123,7 @@ namespace CityGenerator
             ConstructMainRoad();
             AdjustCityBase();
             GenerateCityGroupMark();
-            Generate();
+            //Generate();
             //LogAllCitiesMarks();
 
             ComputeCameraPosition();
@@ -141,6 +144,45 @@ namespace CityGenerator
             maximumSubCityRoadCountCache = maximumLotRoadCount;
 
             isInitial = true;
+            //StartCoroutine(Generate());
+
+            //IEnumerator Generate()
+            //{
+            //    var estimateTime = Time.realtimeSinceStartup;
+
+            //    print($"Start : {Time.realtimeSinceStartup}");
+            //    Clear();
+
+            //    yield return new WaitForEndOfFrame();
+
+            //    CityUtility.SetSeed(seed);
+
+            //    ConstructEdgeBuilding();
+            //    ConstructMainRoad();
+            //    AdjustCityBase();
+            //    GenerateCityGroupMark();
+            //    Generate();
+            //    //LogAllCitiesMarks();
+
+            //    ComputeCameraPosition();
+            //    transform.localScale = Vector3.one * finalScale;
+
+            //    estimateTime = Time.realtimeSinceStartup - estimateTime;
+            //    print($"Finish : {Time.realtimeSinceStartup}");
+            //    print($"Estimate Time : {estimateTime}");
+            //    PrintTotalRoad();
+            //    PrintTotalBuilding();
+
+            //    seedCache = seed;
+            //    columnCache = column;
+            //    rowCache = row;
+            //    finalScaleCache = finalScale;
+            //    subCityColumnCache = lotColumn;
+            //    subCityRowCache = lotRow;
+            //    maximumSubCityRoadCountCache = maximumLotRoadCount;
+
+            //    isInitial = true;
+            //}
         }
 
         [ContextMenu("Generate Inner City")]
@@ -314,11 +356,12 @@ namespace CityGenerator
 
             {   // Round road
                 var newRoad = roadPool.GetFromPool();
-                var mesh = new Mesh();
                 var roadMeshFilter = newRoad.GetComponent<MeshFilter>();
                 var spline = new Spline();
 
-                roadMeshFilter.mesh = mesh;
+                newRoad.RemoveSplineAt(0);
+                if (!roadMeshFilter.mesh)
+                    roadMeshFilter.mesh = new Mesh();
                 newRoad.transform.position = Vector3.zero;
 
                 int x = 0;
@@ -361,6 +404,9 @@ namespace CityGenerator
 
                 newRoad.AddSpline(spline);
 
+                if (newRoad.TryGetComponent<SplineExtrude>(out var se))
+                    se.Rebuild();
+
                 majorRoads.Add(newRoad);
             }
 
@@ -371,11 +417,12 @@ namespace CityGenerator
                 for (int i = 1; i < horizontalMajorRoadCount; i++)
                 {
                     var newRoad = roadPool.GetFromPool();
-                    var mesh = new Mesh();
                     var roadMeshFilter = newRoad.GetComponent<MeshFilter>();
                     var spline = new Spline();
 
-                    roadMeshFilter.mesh = mesh;
+                    newRoad.RemoveSplineAt(0);
+                    if (!roadMeshFilter.mesh)
+                        roadMeshFilter.mesh = new Mesh();
                     newRoad.transform.position = Vector3.zero;
 
                     var x = (i * lotColumn) - i;
@@ -397,17 +444,21 @@ namespace CityGenerator
 
                     newRoad.AddSpline(spline);
 
+                    if (newRoad.TryGetComponent<SplineExtrude>(out var se))
+                        se.Rebuild();
+
                     majorHorizontalRoads.Add(newRoad);
                 }
 
                 for (int i = 1; i < verticalMajorRoadCount; i++)
                 {
                     var newRoad = roadPool.GetFromPool();
-                    var mesh = new Mesh();
                     var roadMeshFilter = newRoad.GetComponent<MeshFilter>();
                     var spline = new Spline();
 
-                    roadMeshFilter.mesh = mesh;
+                    newRoad.RemoveSplineAt(0);
+                    if (!roadMeshFilter.mesh)
+                        roadMeshFilter.mesh = new Mesh();
                     newRoad.transform.position = Vector3.zero;
 
                     var y = (i * lotRow) - i;
@@ -428,6 +479,9 @@ namespace CityGenerator
                     }
 
                     newRoad.AddSpline(spline);
+
+                    if (newRoad.TryGetComponent<SplineExtrude>(out var se))
+                        se.Rebuild();
 
                     majorVerticalRoads.Add(newRoad);
                 }

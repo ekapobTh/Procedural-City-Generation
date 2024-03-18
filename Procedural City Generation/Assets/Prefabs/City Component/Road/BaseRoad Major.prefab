@@ -54,7 +54,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6417759129036728760, guid: 5d18c01857907467f81516740de97ce0, type: 3}
       propertyPath: m_Name
-      value: BaseRoad Main
+      value: BaseRoad Major
+      objectReference: {fileID: 0}
+    - target: {fileID: 8381581339804526330, guid: 5d18c01857907467f81516740de97ce0, type: 3}
+      propertyPath: m_RebuildOnSplineChange
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8789620735250472666, guid: 5d18c01857907467f81516740de97ce0, type: 3}
       propertyPath: m_Materials.Array.size
@@ -64,7 +68,8 @@ PrefabInstance:
       propertyPath: m_Materials.Array.data[0]
       value: 
       objectReference: {fileID: 2100000, guid: 5b0e9bcdc9bb144b2a7a6a761ebc3c51, type: 2}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 358852124505246649, guid: 5d18c01857907467f81516740de97ce0, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []
