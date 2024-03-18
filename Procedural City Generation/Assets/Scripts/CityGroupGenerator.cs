@@ -123,7 +123,7 @@ namespace CityGenerator
             ConstructMainRoad();
             AdjustCityBase();
             GenerateCityGroupMark();
-            //Generate();
+            Generate();
             //LogAllCitiesMarks();
 
             ComputeCameraPosition();
@@ -144,45 +144,6 @@ namespace CityGenerator
             maximumSubCityRoadCountCache = maximumLotRoadCount;
 
             isInitial = true;
-            //StartCoroutine(Generate());
-
-            //IEnumerator Generate()
-            //{
-            //    var estimateTime = Time.realtimeSinceStartup;
-
-            //    print($"Start : {Time.realtimeSinceStartup}");
-            //    Clear();
-
-            //    yield return new WaitForEndOfFrame();
-
-            //    CityUtility.SetSeed(seed);
-
-            //    ConstructEdgeBuilding();
-            //    ConstructMainRoad();
-            //    AdjustCityBase();
-            //    GenerateCityGroupMark();
-            //    Generate();
-            //    //LogAllCitiesMarks();
-
-            //    ComputeCameraPosition();
-            //    transform.localScale = Vector3.one * finalScale;
-
-            //    estimateTime = Time.realtimeSinceStartup - estimateTime;
-            //    print($"Finish : {Time.realtimeSinceStartup}");
-            //    print($"Estimate Time : {estimateTime}");
-            //    PrintTotalRoad();
-            //    PrintTotalBuilding();
-
-            //    seedCache = seed;
-            //    columnCache = column;
-            //    rowCache = row;
-            //    finalScaleCache = finalScale;
-            //    subCityColumnCache = lotColumn;
-            //    subCityRowCache = lotRow;
-            //    maximumSubCityRoadCountCache = maximumLotRoadCount;
-
-            //    isInitial = true;
-            //}
         }
 
         [ContextMenu("Generate Inner City")]

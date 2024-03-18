@@ -296,13 +296,14 @@ namespace CityGenerator
             {
                 var cityGroupMarks = CityGroupGenerator.Instance.GetCityMarks();
                 var newRoad = roadPool.GetFromPool();
-                var mesh = new Mesh();
                 var roadMeshFilter = newRoad.GetComponent<MeshFilter>();
                 var spline = new Spline();
 
                 newRoad.name = CityGroupGenerator.Instance.GetMinorRoadIndex().ToString();
 
-                roadMeshFilter.mesh = mesh;
+                newRoad.RemoveSplineAt(0);
+                if (!roadMeshFilter.mesh)
+                    roadMeshFilter.mesh = new Mesh();
                 newRoad.transform.position = Vector3.zero;
 
                 var startStep = step;
@@ -390,6 +391,9 @@ namespace CityGenerator
                 }
                 spline.SetTangentMode(TangentMode.AutoSmooth);
                 newRoad.AddSpline(spline);
+
+                if (newRoad.TryGetComponent<SplineExtrude>(out var se))
+                    se.Rebuild();
 
                 minorRoads.Add(newRoad);
             }
