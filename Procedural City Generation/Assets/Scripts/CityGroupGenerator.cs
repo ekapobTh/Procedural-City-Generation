@@ -11,7 +11,6 @@ namespace CityGenerator
         [SerializeField] private int seed;
         [Range(1, 5)][SerializeField] private int column; // x
         [Range(1, 5)][SerializeField] private int row; // y
-        [SerializeField] private float finalScale = 1f; // under maintenance
 
         [Space(10)]
         [Range(3, 10)][SerializeField] private int lotColumn; // x
@@ -99,7 +98,6 @@ namespace CityGenerator
             if(seed != seedCache ||
                column != columnCache ||
                row != rowCache ||
-               finalScale != finalScaleCache ||
                lotColumn != subCityColumnCache ||
                lotRow != subCityRowCache ||
                maximumLotRoadCount != maximumSubCityRoadCountCache)
@@ -112,7 +110,7 @@ namespace CityGenerator
 
             var estimateTime = Time.realtimeSinceStartup;
 
-            print($"Start : {Time.realtimeSinceStartup}");
+            //print($"Start : {Time.realtimeSinceStartup}");
             Clear();
 
             //yield return new WaitForEndOfFrame();
@@ -127,18 +125,17 @@ namespace CityGenerator
             //LogAllCitiesMarks();
 
             ComputeCameraPosition();
-            transform.localScale = Vector3.one * finalScale;
+
 
             estimateTime = Time.realtimeSinceStartup - estimateTime;
-            print($"Finish : {Time.realtimeSinceStartup}");
-            print($"Estimate Time : {estimateTime}");
-            PrintTotalRoad();
-            PrintTotalBuilding();
+            //print($"Finish : {Time.realtimeSinceStartup}");
+            //print($"Estimate Time : {estimateTime}");
+            //PrintTotalRoad();
+            //PrintTotalBuilding();
 
             seedCache = seed;
             columnCache = column;
             rowCache = row;
-            finalScaleCache = finalScale;
             subCityColumnCache = lotColumn;
             subCityRowCache = lotRow;
             maximumSubCityRoadCountCache = maximumLotRoadCount;
@@ -506,18 +503,18 @@ namespace CityGenerator
             if (row >= column - 1)
             {
                 var  cameraAdditional = 22.5f;
-                Camera.main.orthographicSize = (CAMERA_FIELD_BASE + (cameraAdditional * (row - 1))) * finalScale;
+                Camera.main.orthographicSize = (CAMERA_FIELD_BASE + (cameraAdditional * (row - 1)));
             }
             else
             {
                 var cameraAdditional = 12.5f;
-                Camera.main.orthographicSize = (CAMERA_FIELD_BASE + (cameraAdditional * (column - 2))) * finalScale;
+                Camera.main.orthographicSize = (CAMERA_FIELD_BASE + (cameraAdditional * (column - 2)));
             }
         }
 
         private void LogAllCitiesMarks()
         {
-            print($"x : {cityMarks.GetLength(0)} y : {cityMarks.GetLength(1)}");
+            //print($"x : {cityMarks.GetLength(0)} y : {cityMarks.GetLength(1)}");
             string markLog = "";
             for (int x = 0; x < cityMarks.GetLength(0); x++)
             {
@@ -530,7 +527,7 @@ namespace CityGenerator
                 markLog += "\n";
             }
 
-            print(markLog);
+            //print(markLog);
             LogToFile.LogToTextFile(markLog);
         }
 
@@ -545,7 +542,7 @@ namespace CityGenerator
             foreach (var city in cities)
                 totalRoad += city.MinorRoads.Count;
 
-            print($"Total Road : {totalRoad}");
+            //print($"Total Road : {totalRoad}");
         }
 
         private void PrintTotalBuilding()
@@ -557,7 +554,7 @@ namespace CityGenerator
             foreach (var city in cities)
                 totalBuilding += city.Buildings.Count;
 
-            print($"Total Building : {totalBuilding}");
+            //print($"Total Building : {totalBuilding}");
         }
     }
 }

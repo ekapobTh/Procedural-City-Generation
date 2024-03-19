@@ -108,22 +108,11 @@ namespace CityGenerator
             _collider.transform.localScale = GetActualScale();
             _collider.size = new Vector3(baseColiderSize.x, totalHeightOffset, baseColiderSize.z);
             _collider.transform.localPosition = baseColiderPosition + new Vector3(0f, totalHeightOffset * 2.375f, 0f);
-            if (log)
-                Debug.Log($"JEK {baseColiderSize} : {_collider.size}\n" +
-                    $"{baseColiderPosition} : {_collider.transform.localPosition}");
         }
 
         private Vector3 GetActualScale() => new Vector3(
                 1f * scale * amplifySize.x,
                 1f * scale * amplifySize.y,
                 1f * scale * amplifySize.z);
-
-        [ContextMenu("Log")]
-        public void EIIE()
-        {
-            if (log)
-                Debug.Log($"JEKx {baseColiderSize} : {_collider.size}\n" +
-                    $"{baseColiderPosition} : {_collider.transform.position} : {_collider.transform.localPosition}");
-        }
     }
 }
