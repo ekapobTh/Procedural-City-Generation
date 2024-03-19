@@ -11,7 +11,7 @@ namespace CityGenerator
         [SerializeField] private int seed;
         [Range(1, 5)][SerializeField] private int column; // x
         [Range(1, 5)][SerializeField] private int row; // y
-        [SerializeField] private float finalScale = 1f;
+        [SerializeField] private float finalScale = 1f; // under maintenance
 
         [Space(10)]
         [Range(3, 10)][SerializeField] private int lotColumn; // x
