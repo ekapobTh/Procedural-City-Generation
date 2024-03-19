@@ -1,7 +1,9 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Splines;
+using UnityEngine.UI;
 
 //   Back
 // Left Right
@@ -60,14 +62,17 @@ namespace CityGenerator
         public void SetCityOffsetPosition(Vector2 newOffsetPosition) => cityOffsetPosition = newOffsetPosition;
         public void SetCityOffsetIndex(Vector2 newOffsetIndex) => cityOffsetIndex = newOffsetIndex;
 
-        //private void Update()
-        //{
-        //    if (isInstantGenerating && isAutoGenerating)
-        //    {
-        //        if (seedCache != seed || columnCache != subCityColumn || rowCache != subCityRow || maximumMinorRoadCountCache != maximumMinorRoadCount)
-        //            InstantGenerating();
-        //    }
-        //}
+        // Pooling
+        private PoolingObjects<CityMark> markPool;
+        private PoolingObjects<SplineContainer> roadPool;
+        private PoolingObjects<CityBuildingGenerator> buildingPool;
+
+        private void Awake()
+        {
+            if (markPool == null) markPool = new PoolingObjects<CityMark>(markPrefab, markParent);
+            if (roadPool == null) roadPool = new PoolingObjects<SplineContainer>(minorRoadPrefab, roadParent);
+            if (buildingPool == null) buildingPool = new PoolingObjects<CityBuildingGenerator>(buildingPrefab, buildingParent);
+        }
 
         [ContextMenu("Generate City Mark")]
         private void GenerateCityBaseMark()
@@ -86,7 +91,7 @@ namespace CityGenerator
                 {
                     if (isGenerateMark)
                     {
-                        var newMark = Instantiate(markPrefab, markParent) as CityMark;
+                        var newMark = markPool.GetFromPool();
 
                         newMark.transform.position = new Vector3(cityOffsetPosition.x + (x * CityUtility.MARKS_SPACE), 0f, cityOffsetPosition.y + (y * CityUtility.MARKS_SPACE));
                         newMark.name = $"{x} {y}";
@@ -290,14 +295,15 @@ namespace CityGenerator
             void DrawRoad((int, int) step, StepMoveDirectionType dir)
             {
                 var cityGroupMarks = CityGroupGenerator.Instance.GetCityMarks();
-                var newRoad = Instantiate(minorRoadPrefab, roadParent) as SplineContainer;
-                var mesh = new Mesh();
+                var newRoad = roadPool.GetFromPool();
                 var roadMeshFilter = newRoad.GetComponent<MeshFilter>();
                 var spline = new Spline();
 
                 newRoad.name = CityGroupGenerator.Instance.GetMinorRoadIndex().ToString();
 
-                roadMeshFilter.mesh = mesh;
+                newRoad.RemoveSplineAt(0);
+                if (!roadMeshFilter.mesh)
+                    roadMeshFilter.mesh = new Mesh();
                 newRoad.transform.position = Vector3.zero;
 
                 var startStep = step;
@@ -386,6 +392,9 @@ namespace CityGenerator
                 spline.SetTangentMode(TangentMode.AutoSmooth);
                 newRoad.AddSpline(spline);
 
+                if (newRoad.TryGetComponent<SplineExtrude>(out var se))
+                    se.Rebuild();
+
                 minorRoads.Add(newRoad);
             }
         }
@@ -423,7 +432,7 @@ namespace CityGenerator
                         if (!isBuildingValid || !marks.IsMarkAvailableToDraw(currentStep))
                             continue;
 
-                        var newBuilding = Instantiate(buildingPrefab, buildingParent) as CityBuildingGenerator;
+                        var newBuilding = buildingPool.GetFromPool();
 
                         var isMerge = (CityUtility.GetCurrentSeedValue() * 100) > 75;
 
@@ -520,6 +529,8 @@ namespace CityGenerator
                         newBuilding.SetFacingDirection(facingDirection);
                         newBuilding.Construct();
                         newBuilding.transform.position = buildingPosition;
+
+                        buildings.Add(newBuilding);
                     }
                 }
         }
@@ -595,19 +606,22 @@ namespace CityGenerator
             currentDrawnRoad = 0;
 
             if (majorRoad != null)
-                Destroy(majorRoad.gameObject);
+                roadPool.ReturnToPool(majorRoad);
 
             if (minorRoads.Count > 0)
             {
                 foreach (var minorRoad in minorRoads)
-                    Destroy(minorRoad.gameObject);
+                {
+                    minorRoad.RemoveSpline(minorRoad.Spline);
+                    roadPool.ReturnToPool(minorRoad);
+                }
                 minorRoads.Clear();
             }
 
             if (buildings.Count > 0)
             {
                 foreach (var building in buildings)
-                    Destroy(building.gameObject);
+                    buildingPool.ReturnToPool(building);
                 buildings.Clear();
             }
 
@@ -628,7 +642,10 @@ namespace CityGenerator
                 if (marks != null && marks.Length > 0)
                     for (int x = 0; x < marks.GetLength(0); x++)
                         for (int y = 0; y < marks.GetLength(1); y++)
-                            Destroy(marks[x, y].gameObject);
+                        {
+                            marks[x, y].Clear();
+                            markPool.ReturnToPool(marks[x, y]);
+                        }
 
                 marks = null;
             }
@@ -649,7 +666,6 @@ namespace CityGenerator
         public void InstantGenerating()
         {
             ClearCheckCache(true);
-            //GenerateCityBaseMark();
             MapMarksFromCityGroup();
             GenerateMinorRoad();
             VisualizeMinorRoad();

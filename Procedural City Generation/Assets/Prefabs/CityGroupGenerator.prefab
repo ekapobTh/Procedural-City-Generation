@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4836818158493233149}
   - component: {fileID: 910399375978182894}
+  - component: {fileID: 3841063653930304669}
   m_Layer: 0
   m_Name: CityGroupGenerator
   m_TagString: Untagged
@@ -54,9 +55,9 @@ MonoBehaviour:
   column: 3
   row: 3
   finalScale: 1
-  subCityColumn: 10
-  subCityRow: 10
-  maximumSubCityRoadCount: 5
+  lotColumn: 0
+  lotRow: 0
+  maximumLotRoadCount: 0
   cityBase: {fileID: 3620919610242928254}
   subCityParent: {fileID: 5886710678616694780}
   subCityPrefab: {fileID: 5592535947723989454, guid: e1ff7cf0d58f2484784ccd41053ac3e3, type: 3}
@@ -66,7 +67,20 @@ MonoBehaviour:
   markPrefab: {fileID: 4004840630647562139, guid: a23f2702a6b934d4fa8208867000f2cf, type: 3}
   edgeParent: {fileID: 3731009182216542831}
   edgePrefab: {fileID: 4832456215228124777, guid: d8897581f8dda4e23b6b23b60347c94a, type: 3}
+  isRealtimeRefresh: 0
   cameraPosition: {fileID: 6352754722455855958}
+--- !u!114 &3841063653930304669
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 329767177517391532}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 524212d25fc384086a1f2c20663e0931, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &966917890094293733
 GameObject:
   m_ObjectHideFlags: 0

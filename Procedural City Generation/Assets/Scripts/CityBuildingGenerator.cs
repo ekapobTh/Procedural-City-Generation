@@ -15,6 +15,13 @@ namespace CityGenerator
         [SerializeField] private GameObject[] bodyParts;
         [SerializeField] private GameObject[] ceilingParts;
 
+        private bool initialize = false;
+        private Vector3 baseColiderPosition;
+        private Vector3 baseColiderSize;
+        private Vector3 basePosition;
+
+        public bool log = false;
+
         [ContextMenu("Construct")]
         public void InstantConstruct() => Construct();
 
@@ -23,8 +30,27 @@ namespace CityGenerator
         private Vector3 amplifySize = Vector3.one;
         private float totalHeightOffset = 0f;
 
+        private void Awake()
+        {
+            if (!initialize)
+                Initialize();
+        }
+
+        private void Initialize()
+        {
+            initialize = true;
+
+            baseColiderPosition = _collider.transform.localPosition;
+            baseColiderSize = _collider.size;
+
+            basePosition = transform.position;
+        }
+
         public void Construct(int piece = CityUtility.NULL_INDEX)
         {
+            if (!initialize)
+                Initialize();
+
             Clear();
 
             var targetPieces = piece == CityUtility.NULL_INDEX ? (int)(CityUtility.GetCurrentSeedValue() * 5) : piece;
@@ -40,7 +66,7 @@ namespace CityGenerator
             totalHeightOffset = heightOffset;
 
             buildingParent.localScale = GetActualScale();
-            buildingParent.position = new Vector3(buildingPositionOffset * scale * amplifySize.x, 0f, buildingPositionOffset * scale * amplifySize.z);
+            buildingParent.localPosition = new Vector3(buildingPositionOffset * scale * amplifySize.x, 0f, buildingPositionOffset * scale * amplifySize.z);
 
             transform.rotation = Quaternion.Euler(facingDirection.ToRotation());
             RefreshCollision();
@@ -51,7 +77,7 @@ namespace CityGenerator
             var percentIndex = (int)(pieceArray.Length * CityUtility.GetCurrentSeedValue());
             var layer = Instantiate(pieceArray[Mathf.Min(percentIndex, pieceArray.Length - 1)], buildingParent);
 
-            layer.transform.localPosition = new Vector3(0f, transform.position.y + (inputHeight), 0f);
+            layer.transform.localPosition = new Vector3(0f, basePosition.y + (inputHeight), 0f);
             
             return layer.GetComponentInChildren<MeshFilter>().mesh.bounds.size.y;
         }
@@ -62,8 +88,10 @@ namespace CityGenerator
                 Destroy(buildingParent.GetChild(i).gameObject);
 
             buildingParent.localScale = Vector3.one;
-            buildingParent.position = Vector3.zero;
+            buildingParent.localPosition = Vector3.zero;
             transform.rotation = Quaternion.Euler(Vector3.zero);
+
+            totalHeightOffset = 0f;
         }
 
         public void Resize(Vector3 size)
@@ -78,13 +106,24 @@ namespace CityGenerator
         private void RefreshCollision()
         {
             _collider.transform.localScale = GetActualScale();
-            _collider.size = new Vector3(_collider.size.x, totalHeightOffset, _collider.size.z);
-            _collider.transform.position += new Vector3(0f, totalHeightOffset * 2.375f, 0f);
+            _collider.size = new Vector3(baseColiderSize.x, totalHeightOffset, baseColiderSize.z);
+            _collider.transform.localPosition = baseColiderPosition + new Vector3(0f, totalHeightOffset * 2.375f, 0f);
+            if (log)
+                Debug.Log($"JEK {baseColiderSize} : {_collider.size}\n" +
+                    $"{baseColiderPosition} : {_collider.transform.localPosition}");
         }
 
         private Vector3 GetActualScale() => new Vector3(
                 1f * scale * amplifySize.x,
                 1f * scale * amplifySize.y,
                 1f * scale * amplifySize.z);
+
+        [ContextMenu("Log")]
+        public void EIIE()
+        {
+            if (log)
+                Debug.Log($"JEKx {baseColiderSize} : {_collider.size}\n" +
+                    $"{baseColiderPosition} : {_collider.transform.position} : {_collider.transform.localPosition}");
+        }
     }
 }
