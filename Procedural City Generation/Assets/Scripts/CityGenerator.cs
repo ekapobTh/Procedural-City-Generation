@@ -529,6 +529,8 @@ namespace CityGenerator
                         newBuilding.SetFacingDirection(facingDirection);
                         newBuilding.Construct();
                         newBuilding.transform.position = buildingPosition;
+
+                        buildings.Add(newBuilding);
                     }
                 }
         }
@@ -640,7 +642,10 @@ namespace CityGenerator
                 if (marks != null && marks.Length > 0)
                     for (int x = 0; x < marks.GetLength(0); x++)
                         for (int y = 0; y < marks.GetLength(1); y++)
+                        {
+                            marks[x, y].Clear();
                             markPool.ReturnToPool(marks[x, y]);
+                        }
 
                 marks = null;
             }
@@ -660,26 +665,18 @@ namespace CityGenerator
         [ContextMenu("Instant Create")]
         public void InstantGenerating()
         {
-            StartCoroutine(Generate());
-            //GenerateCityBaseMark();
+            ClearCheckCache(true);
+            MapMarksFromCityGroup();
+            GenerateMinorRoad();
+            VisualizeMinorRoad();
+            GenerateBuilding();
+            GenerateCityBase();
 
-            IEnumerator Generate()
-            {
-                ClearCheckCache(true);
-                yield return new WaitForEndOfFrame();
-
-                MapMarksFromCityGroup();
-                GenerateMinorRoad();
-                VisualizeMinorRoad();
-                GenerateBuilding();
-                GenerateCityBase();
-
-                seedCache = seed;
-                columnCache = subCityColumn;
-                rowCache = subCityRow;
-                maximumMinorRoadCountCache = maximumMinorRoadCount;
-                isInstantGenerating = true;
-            }
+            seedCache = seed;
+            columnCache = subCityColumn;
+            rowCache = subCityRow;
+            maximumMinorRoadCountCache = maximumMinorRoadCount;
+            isInstantGenerating = true;
         }
     }
 }

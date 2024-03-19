@@ -40,8 +40,8 @@ public class PoolingObjects<T> where T : MonoBehaviour
 
     public void ReturnToPool(T item)
     {
-        item.gameObject.SetActive(false);
         occupiedPool.Remove(item);
         availablePool.Enqueue(item);
+        item.gameObject.SetActive(false);
     }
 }

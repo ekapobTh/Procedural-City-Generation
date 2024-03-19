@@ -194,8 +194,12 @@ namespace CityGenerator
             foreach (var obj in majorVerticalRoads)
                 roadPool.ReturnToPool(obj);
             majorVerticalRoads.Clear();
-
+            if(cityMarks != null && cityMarks.Length > 0)
+                for (int i = 0; i < cityMarks.GetLength(0); i++)
+                    for (int j = 0; j < cityMarks.GetLength(1); j++)
+                        markPool.ReturnToPool(cityMarks[i,j]);
             cityMarks = new CityMark[(column * lotColumn) - (column - 1), (row * lotRow) - (row - 1)];
+
             minorRoadIndex = 0;
         }
 
